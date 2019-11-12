@@ -13,7 +13,7 @@ export class SignUpComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private usersService: UsersServiceService, private router: Router) { }
 
   signUpForm: FormGroup;
-
+  isLoading = false;
   ngOnInit() {
     this.signUpForm = this.formBuilder.group({
       firstName: ['', Validators.required],
@@ -27,9 +27,13 @@ export class SignUpComponent implements OnInit {
   get signUpData() { return this.signUpForm.controls; }
 
   onSubmit() {
-    if (this.signUpForm.invalid) {
+    if (this.signUpForm.invalid || this.isLoading) {
       return;
     }
-    this.usersService.registerUser(this.signUpForm.value).subscribe(x => { this.router.navigate(["/SignIn"]) });
+    this.isLoading = true;
+    this.usersService.registerUser(this.signUpForm.value).subscribe(x => {
+      this.isLoading = false;
+      this.router.navigate(["/SignIn"])
+    });
   }
 }

@@ -1,34 +1,61 @@
 <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-<div class="card text-center w-50 mx-auto mt-5">
-    <div class="card-header bg-primary">
-        <h3>Sign Up</h3>
-    </div>
+    <div class="card text-center w-50 mx-auto mt-5">
+        <div class="card-header bg-primary">
+            <h3>Sign Up</h3>
+        </div>
 
-    <div class="card-body">
-        <div class="form-group row d-flex justify-content-center align-items-center">
-            <label for="firstName" class="col-form-label col-sm-2 text-right">First Name:</label>
-            <input type="text" formControlName="firstName" />
+        <div class="card-body">
+            <div class="form-group row d-flex justify-content-center align-items-center">
+                <label for="firstName" class="col-form-label col-sm-2 text-right">First Name:</label>
+                <div class="col-sm-5">
+                    <input type="text" formControlName="firstName" class="form-control" />
+                    <div *ngIf="signUpData.firstName.invalid && (signUpData.firstName.dirty || signUpData.firstName.touched)" class="alert-danger">
+                        <span>First name is required!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row d-flex justify-content-center align-items-center">
+                <label for="lastName" class="col-form-label col-sm-2 text-right">Last Name:</label>
+                <div class="col-sm-5">
+                    <input type="text" formControlName="lastName" class="form-control" />
+                    <div *ngIf="signUpData.lastName.invalid && (signUpData.lastName.dirty || signUpData.lastName.touched)" class="alert-danger">
+                        <span>Last name is required!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row d-flex justify-content-center align-items-center">
+                <label for="email" class="col-form-label col-sm-2 text-right">Email:</label>
+                <div class="col-sm-5">
+                    <input type="text" formControlName="email" class="form-control" />
+                    <div *ngIf="signUpData.email.invalid && (signUpData.email.dirty || signUpData.email.touched)" class="alert-danger">
+                        <span *ngIf="signUpData.email.errors.required">Email is required!</span>
+                        <span *ngIf="signUpData.email.errors.email">Email must be a valid address!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row d-flex justify-content-center align-items-center">
+                <label for="password" class="col-form-label col-sm-2 text-right">Password:</label>
+                <div class="col-sm-5">
+                    <input type="password" formControlName="password" class="form-control" />
+                    <div *ngIf="signUpData.password.invalid && (signUpData.password.dirty || signUpData.password.touched)" class="alert-danger">
+                        <span *ngIf="signUpData.password.errors.required">Password is required!</span>
+                        <span *ngIf="signUpData.password.errors.minlength">Password must be at least 12 characters!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row d-flex justify-content-center align-items-center">
+                <label for="mobileNumber" class="col-form-label col-sm-2 text-right">Mobile number:</label>
+                <div class="col-sm-5">
+                    <input type="text" formControlName="mobileNumber" class="form-control" />
+                    <div *ngIf="signUpData.mobileNumber.invalid && (signUpData.mobileNumber.dirty || signUpData.mobileNumber.touched)" class="alert-danger">
+                        <span>Mobile number is required!</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group row d-flex justify-content-center align-items-center">
-            <label for="lastName" class="col-form-label col-sm-2 text-right">Last Name:</label>
-            <input type="text" formControlName="lastName" />
+        <div class="card-footer">
+            <button [disabled]="isLoading" class="btn btn-primary mr-2">Sign Up</button>
         </div>
-        <div class="form-group row d-flex justify-content-center align-items-center">
-            <label for="email" class="col-form-label col-sm-2 text-right">Email:</label>
-            <input type="text" formControlName="email" />
-        </div>
-        <div class="form-group row d-flex justify-content-center align-items-center">
-            <label for="password" class="col-form-label col-sm-2 text-right">Password:</label>
-            <input type="password" formControlName="password" />
-        </div>
-        <div class="form-group row d-flex justify-content-center align-items-center">
-            <label for="mobileNumber" class="col-form-label col-sm-2 text-right">Mobile number:</label>
-            <input type="text" formControlName="mobileNumber" />
-        </div>
-    </div>
-    <div class="card-footer">
-        <button class="btn btn-primary mr-2">Sign Up</button>
-    </div>
 
-</div>
+    </div>
 </form>
