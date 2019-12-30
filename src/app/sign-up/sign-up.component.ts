@@ -34,6 +34,9 @@ export class SignUpComponent implements OnInit {
     this.usersService.registerUser(this.signUpForm.value).subscribe(x => {
       this.isLoading = false;
       this.router.navigate(["/SignIn"])
-    });
+    },
+      error => {
+        this.isLoading = false;
+      });
   }
 }

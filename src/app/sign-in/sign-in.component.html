@@ -1,1 +1,38 @@
-<p>sign-in works!</p>
+<form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+    <div class="card text-center w-50 mx-auto mt-5">
+        <div class="card-header bg-primary">
+            <h3>Sign In</h3>
+        </div>
+
+        <div class="card-body">
+            <div [hidden]="!showError" class="alert-danger alert">
+                <span >Login or Password is incorrect!</span>
+            </div>
+            <div class="form-group row d-flex justify-content-center align-items-center">
+                <label for="email" class="col-form-label col-sm-2 text-right">Email:</label>
+                <div class="col-sm-5">
+                    <input type="text" formControlName="email" class="form-control" />
+                    <div *ngIf="signInData.email.invalid && (signInData.email.dirty || signInData.email.touched)"
+                        class="alert-danger">
+                        <span *ngIf="signInData.email.errors.required">Email is required!</span>
+                        <span *ngIf="signInData.email.errors.email">Email must be a valid address!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row d-flex justify-content-center align-items-center">
+                <label for="password" class="col-form-label col-sm-2 text-right">Password:</label>
+                <div class="col-sm-5">
+                    <input type="password" formControlName="password" class="form-control" />
+                    <div *ngIf="signInData.password.invalid && (signInData.password.dirty || signInData.password.touched)"
+                        class="alert-danger">
+                        <span *ngIf="signInData.password.errors.required">Password is required!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button [disabled]="isLoading" class="btn btn-primary mr-2">Sign In</button>
+        </div>
+
+    </div>
+</form>

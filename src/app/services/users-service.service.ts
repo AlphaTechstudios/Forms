@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { UserModel } from "../models/user-model";
+import { LoginModel } from "../models/login-model";
 
 @Injectable({
   providedIn: 'root'
@@ -17,5 +18,9 @@ export class UsersServiceService {
 
   registerUser(userModel: UserModel) {
     return this.httpClient.post<UserModel>(this.baseUrl, userModel, this.httpOptions);
+  }
+
+  login(loginModel: LoginModel){
+    return this.httpClient.post<any>(`${this.baseUrl}/login`, loginModel, this.httpOptions);
   }
 }
