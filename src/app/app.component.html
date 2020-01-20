@@ -1,2 +1,2 @@
-<app-nav-bar></app-nav-bar>
+<app-nav-bar [currentUser]="currentUser" (logOutMsgEmit)="logOut($event)" ></app-nav-bar>
 <router-outlet></router-outlet>

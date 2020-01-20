@@ -4,12 +4,15 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
+        <div class="navbar-nav" *ngIf="currentUser">
             <a class="nav-item nav-link" routerLink="/Home">Home</a>
           </div>
-      <div class="navbar-nav ml-auto">
+      <div class="navbar-nav ml-auto" *ngIf="!currentUser">
         <a class="nav-item nav-link" routerLink="/SignUp">Sign Up</a>
         <a class="nav-item nav-link" routerLink="/SignIn">Sign in</a>
+      </div>
+      <div class="navbar-nav ml-auto" *ngIf="currentUser">
+        <a class="nav-item nav-link" (click)="logout()">Logout</a>
       </div>
     </div>
   </nav>

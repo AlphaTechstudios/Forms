@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { UserModel } from 'src/app/models/user-model';
 
 @Component({
   selector: 'app-nav-bar',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavBarComponent implements OnInit {
 
+  @Input() currentUser:UserModel;
+  @Output() logOutMsgEmit = new EventEmitter<string>(); 
   constructor() { }
 
   ngOnInit() {
+  }
+
+  logout(){
+    this.logOutMsgEmit.emit('logout');
   }
 
 }

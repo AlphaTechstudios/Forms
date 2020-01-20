@@ -9,6 +9,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { SignInComponent } from './sign-in/sign-in.component';
 import { HttpClientModule } from "@angular/common/http";
 import { HomeComponent } from './home/home.component';
+import { JwtInterceptor } from './Tools/jwt-interceptor';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,9 @@ import { HomeComponent } from './home/home.component';
     ReactiveFormsModule,
     HttpClientModule
     ],
-  providers: [],
+  providers: [
+    {provide:"HTTP_INTERCEPTORS", useClass: JwtInterceptor, multi:true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

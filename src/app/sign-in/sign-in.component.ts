@@ -14,9 +14,13 @@ export class SignInComponent implements OnInit {
 
   signInForm: FormGroup;
   isLoading = false;
-  showError= false;
+  showError = false;
 
-  constructor(private formBuilder: FormBuilder, private usersService: UsersServiceService, private router: Router) { }
+  constructor(private formBuilder: FormBuilder, private usersService: UsersServiceService, private router: Router) {
+    if (this.usersService.currentUserObject) {
+      this.router.navigate(["/Home"]);
+    }
+  }
 
   ngOnInit() {
     this.signInForm = this.formBuilder.group({
@@ -27,9 +31,9 @@ export class SignInComponent implements OnInit {
 
   get signInData() { return this.signInForm.controls; }
 
-  onSubmit(){
-    if(this.signInForm.invalid || this.isLoading){
-      return ;
+  onSubmit() {
+    if (this.signInForm.invalid || this.isLoading) {
+      return;
     }
 
     this.isLoading = true;
@@ -39,7 +43,7 @@ export class SignInComponent implements OnInit {
       // redirect to Home page.
       this.router.navigate(["/Home"]);
     },
-      error =>{
+      error => {
         this.isLoading = false;
         this.showError = true;
       });
