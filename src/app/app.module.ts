@@ -10,6 +10,7 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { HttpClientModule } from "@angular/common/http";
 import { HomeComponent } from './home/home.component';
 import { JwtInterceptor } from './Tools/jwt-interceptor';
+import { ManageUsersComponent } from './manage-users/manage-users.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { JwtInterceptor } from './Tools/jwt-interceptor';
     NavBarComponent,    
     SignUpComponent,
     SignInComponent,
-    HomeComponent
+    HomeComponent,
+    ManageUsersComponent
   ],
   imports: [
     BrowserModule,

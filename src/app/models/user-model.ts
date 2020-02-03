@@ -6,4 +6,5 @@ export class UserModel {
     password: string;
     mobileNumber: string;
     token?: string;
+    profile:number;
 }
