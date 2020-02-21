@@ -7,10 +7,11 @@ import { NavBarComponent } from './menus/nav-bar/nav-bar.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ReactiveFormsModule } from "@angular/forms";
 import { SignInComponent } from './sign-in/sign-in.component';
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { HomeComponent } from './home/home.component';
 import { JwtInterceptor } from './Tools/jwt-interceptor';
 import { ManageUsersComponent } from './manage-users/manage-users.component';
+import { EditUserComponent } from './edit-user/edit-user.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ManageUsersComponent } from './manage-users/manage-users.component';
     SignUpComponent,
     SignInComponent,
     HomeComponent,
-    ManageUsersComponent
+    ManageUsersComponent,
+    EditUserComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +30,7 @@ import { ManageUsersComponent } from './manage-users/manage-users.component';
     HttpClientModule
     ],
   providers: [
-    {provide:"HTTP_INTERCEPTORS", useClass: JwtInterceptor, multi:true}
+    {provide:HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi:true}
   ],
   bootstrap: [AppComponent]
 })

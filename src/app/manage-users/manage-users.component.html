@@ -1,1 +1,26 @@
-<p>manage-users works!</p>
+
+<table class="table" *ngIf="usersList">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Mobile number</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of usersList, let i = index">
+        <th scope="row">{{i}}</th>
+        <td>{{user.firstName}}</td>
+        <td>{{user.lastName}}</td>
+        <td>{{user.email}}</td>
+        <td>{{user.mobileNumber}}</td>
+        <td>
+            <button class="btn btn-primary m-2" (click)="editItem(user)">Edit</button>
+            <button class="btn btn-primary" (click)="deleteItem(user)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>

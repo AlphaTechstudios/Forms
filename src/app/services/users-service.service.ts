@@ -19,12 +19,13 @@ export class UsersServiceService {
   };
 
   private baseUrl = "/api/Users";
+
   constructor(private httpClient: HttpClient) {
-    this.currentUserSubject = new BehaviorSubject<UserModel>(JSON.parse(localStorage.getItem('currentUser')));
+    this.currentUserSubject = new BehaviorSubject<UserModel>(JSON.parse(sessionStorage.getItem('currentUser')));
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  public get currentUserObject():UserModel{
+  public get currentUserObject(): UserModel {
     return this.currentUserSubject.value;
   }
 
@@ -33,16 +34,39 @@ export class UsersServiceService {
   }
 
   login(loginModel: LoginModel) {
+    sessionStorage.removeItem('currentUser');
+
     return this.httpClient.post<any>(`${this.baseUrl}/login`, loginModel, this.httpOptions)
-    .pipe(map(user=>{
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      this.currentUserSubject.next(user);
-      return user
-    }));
+      .pipe(map(user => {
+        sessionStorage.setItem('currentUser', JSON.stringify(user));
+        console.log(JSON.stringify(user));
+        console.log(this.currentUserSubject.value);
+
+
+        this.currentUserSubject.next(user);
+        return user
+      }));
   }
 
-  logout(){
+  updateUser(userModel) {
+    return this.httpClient.put(`${this.baseUrl}/UpdateUser`, userModel, this.httpOptions)
+  }
+
+  deleteUserById(id:number){
+    return this.httpClient.delete(`${this.baseUrl}/DeleteUser/${id}`, this.httpOptions);
+  }
+
+  getUsers(): Observable<UserModel[]> {
+    return this.httpClient.get<UserModel[]>(`${this.baseUrl}/GetUsers`, this.httpOptions)
+  }
+
+  getUserById(id: number): Observable<UserModel> {
+    return this.httpClient.get<UserModel>(`${this.baseUrl}/${id}`, this.httpOptions)
+  }
+
+  logout() {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
   }
+
 }
