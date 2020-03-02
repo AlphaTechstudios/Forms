@@ -12,6 +12,7 @@ import { HomeComponent } from './home/home.component';
 import { JwtInterceptor } from './Tools/jwt-interceptor';
 import { ManageUsersComponent } from './manage-users/manage-users.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -23,11 +24,13 @@ import { EditUserComponent } from './edit-user/edit-user.component';
     ManageUsersComponent,
     EditUserComponent
   ],
+  
   imports: [
     BrowserModule,
     AppRoutingModule, 
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbModule
     ],
   providers: [
     {provide:HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi:true}
