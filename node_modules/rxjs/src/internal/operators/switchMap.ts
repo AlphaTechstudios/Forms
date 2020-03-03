@@ -36,8 +36,25 @@ export function switchMap<T, R, O extends ObservableInput<any>>(project: (value:
  * subsequent inner Observables.
  *
  * ## Example
+ * Generate new Observable according to source Observable values
+ * ```typescript
+ * import { of } from 'rxjs';
+ * import { switchMap } from 'rxjs/operators';
+ *
+ * const switched = of(1, 2, 3).pipe(switchMap((x: number) => of(x, x ** 2, x ** 3)));
+ * switched.subscribe(x => console.log(x));
+ * // outputs
+ * // 1
+ * // 1
+ * // 1
+ * // 2
+ * // 4
+ * // 8
+ * // ... and so on
+ * ```
+ *
  * Rerun an interval Observable on every click event
- * ```javascript
+ * ```ts
  * import { fromEvent, interval } from 'rxjs';
  * import { switchMap } from 'rxjs/operators';
  *
@@ -116,10 +133,16 @@ class SwitchMapSubscriber<T, R> extends OuterSubscriber<T, R> {
     if (innerSubscription) {
       innerSubscription.unsubscribe();
     }
-    const innerSubscriber = new InnerSubscriber(this, undefined, undefined);
+    const innerSubscriber = new InnerSubscriber(this, value, index);
     const destination = this.destination as Subscription;
     destination.add(innerSubscriber);
-    this.innerSubscription = subscribeToResult(this, result, value, index, innerSubscriber);
+    this.innerSubscription = subscribeToResult(this, result, undefined, undefined, innerSubscriber);
+    // The returned subscription will usually be the subscriber that was
+    // passed. However, interop subscribers will be wrapped and for
+    // unsubscriptions to chain correctly, the wrapper needs to be added, too.
+    if (this.innerSubscription !== innerSubscriber) {
+      destination.add(this.innerSubscription);
+    }
   }
 
   protected _complete(): void {

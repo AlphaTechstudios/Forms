@@ -29,7 +29,7 @@ export interface ShareReplayConfig {
  * ![](shareReplay.png)
  *
  * ## Example
- * ```javascript
+ * ```ts
  * import { interval } from 'rxjs';
  * import { shareReplay, take } from 'rxjs/operators';
  *
@@ -102,6 +102,7 @@ function shareReplayOperator<T>({
         },
         complete() {
           isComplete = true;
+          subscription = undefined;
           subject.complete();
         },
       });

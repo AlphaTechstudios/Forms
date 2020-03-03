@@ -7,7 +7,7 @@
  */
 
 declare function plural(n: number): number;
-declare const _default: (string | number | (string[] | undefined)[] | number[] | (string | undefined)[] | typeof plural | {
+declare const _default: (string | number | number[] | (string | undefined)[] | typeof plural | (string[] | undefined)[] | {
     'BYN': (string | undefined)[];
     'DKK': (string | undefined)[];
     'HRK': (string | undefined)[];
@@ -18,7 +18,6 @@ declare const _default: (string | number | (string[] | undefined)[] | number[] |
     'SEK': (string | undefined)[];
     'THB': string[];
     'TWD': string[];
-    'USD': string[];
     'ZAR': string[];
 } | undefined)[];
 export default _default;

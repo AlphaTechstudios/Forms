@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="9.5.8"></a>
+## [9.5.8](https://github.com/npm/pacote/compare/v9.5.7...v9.5.8) (2019-08-20)
+
+
+
+<a name="9.5.7"></a>
+## [9.5.7](https://github.com/npm/pacote/compare/v9.5.6...v9.5.7) (2019-08-19)
+
+
+### Bug Fixes
+
+* do not try to chown if not running as root ([bbc5da3](https://github.com/npm/pacote/commit/bbc5da3))
+
+
+
+<a name="9.5.6"></a>
+## [9.5.6](https://github.com/npm/pacote/compare/v9.5.5...v9.5.6) (2019-08-15)
+
+
+### Bug Fixes
+
+* **extract:** chown properly when more than one directory is made ([5161828](https://github.com/npm/pacote/commit/5161828))
+
+
+
 <a name="9.5.5"></a>
 ## [9.5.5](https://github.com/npm/pacote/compare/v9.5.4...v9.5.5) (2019-08-12)
 

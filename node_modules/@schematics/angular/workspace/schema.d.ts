@@ -13,7 +13,24 @@ export interface Schema {
      */
     newProjectRoot?: string;
     /**
+     * The package manager used to install dependencies.
+     */
+    packageManager?: PackageManager;
+    /**
+     * Creates a workspace with stricter TypeScript compiler options.
+     */
+    strict?: boolean;
+    /**
      * The version of the Angular CLI to use.
      */
     version: string;
+}
+/**
+ * The package manager used to install dependencies.
+ */
+export declare enum PackageManager {
+    Cnpm = "cnpm",
+    Npm = "npm",
+    Pnpm = "pnpm",
+    Yarn = "yarn"
 }

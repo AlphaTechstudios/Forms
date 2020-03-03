@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /// <amd-module name="@angular/language-service/src/completions" />
-import { TemplateInfo } from './common';
-import { Completions } from './types';
-export declare function getTemplateCompletions(templateInfo: TemplateInfo): Completions | undefined;
+import { AstResult } from './common';
+import * as ng from './types';
+export declare function getTemplateCompletions(templateInfo: AstResult, position: number): ng.CompletionEntry[];

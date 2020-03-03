@@ -16,7 +16,7 @@ const node_module_engine_host_1 = require("../node-module-engine-host");
  */
 class NodeWorkflow extends schematics_1.workflow.BaseWorkflow {
     constructor(host, options) {
-        const engineHost = new node_module_engine_host_1.NodeModulesEngineHost();
+        const engineHost = new node_module_engine_host_1.NodeModulesEngineHost(options.resolvePaths);
         super({
             host,
             engineHost,
@@ -28,6 +28,7 @@ class NodeWorkflow extends schematics_1.workflow.BaseWorkflow {
             allowPackageManagerOverride: true,
             packageManager: options.packageManager,
             rootDirectory: options.root && core_1.getSystemPath(options.root),
+            registry: options.packageRegistry,
         });
         engineHost.registerTaskExecutor(node_1.BuiltinTaskExecutor.RepositoryInitializer, {
             rootDirectory: options.root && core_1.getSystemPath(options.root),

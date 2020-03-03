@@ -135,10 +135,8 @@ class ArchitectCommand extends command_1.Command {
         this.description.options.push(...(await json_schema_1.parseJsonSchemaToOptions(this._registry, builderDesc.optionSchema)));
         // Update options to remove analytics from options if the builder isn't safelisted.
         for (const o of this.description.options) {
-            if (o.userAnalytics) {
-                if (!analytics_1.isPackageNameSafeForAnalytics(builderConf)) {
-                    o.userAnalytics = undefined;
-                }
+            if (o.userAnalytics && !analytics_1.isPackageNameSafeForAnalytics(builderConf)) {
+                o.userAnalytics = undefined;
             }
         }
     }
@@ -278,9 +276,14 @@ class ArchitectCommand extends command_1.Command {
         else {
             project = commandOptions.project;
             target = this.target;
-            configuration = commandOptions.configuration;
-            if (!configuration && commandOptions.prod) {
+            if (commandOptions.prod) {
+                // The --prod flag will always be the first configuration, available to be overwritten
+                // by following configurations.
                 configuration = 'production';
+            }
+            if (commandOptions.configuration) {
+                configuration =
+                    `${configuration ? `${configuration},` : ''}${commandOptions.configuration}`;
             }
         }
         if (!project) {

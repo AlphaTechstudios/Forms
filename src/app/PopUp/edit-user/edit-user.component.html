@@ -1,22 +1,57 @@
-<div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <form>
-      <div class="form-group">
-        <label for="dateOfBirth">Date of birth</label>
-        <div class="input-group">
-          <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
-          </div>
+<div class="modal-header bg-primary text-white">
+    <h4 class="modal-title" id="modal-basic-title">Update User</h4>
+</div>
+<div class="modal-body">
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()" *ngIf="editForm">
+        <div class="form-group row d-flex justify-content-center align-items-center">
+            <label for="firstName" class="col-form-label col-sm-2 text-right">First Name:</label>
+            <div class="col-sm-5">
+                <input type="text" formControlName="firstName" class="form-control" />
+                <div *ngIf="editFormData.firstName.invalid && (editFormData.firstName.dirty || editFormData.firstName.touched)"
+                    class="alert-danger">
+                    <span>First name is required!</span>
+                </div>
+            </div>
         </div>
-      </div>
+        <div class="form-group row d-flex justify-content-center align-items-center">
+            <label for="lastName" class="col-form-label col-sm-2 text-right">Last Name:</label>
+            <div class="col-sm-5">
+                <input type="text" formControlName="lastName" class="form-control" />
+                <div *ngIf="editFormData.lastName.invalid && (editFormData.lastName.dirty || editFormData.lastName.touched)"
+                    class="alert-danger">
+                    <span>Last name is required!</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row d-flex justify-content-center align-items-center">
+            <label for="email" class="col-form-label col-sm-2 text-right">Email:</label>
+            <div class="col-sm-5">
+                <input type="text" formControlName="email" class="form-control" />
+                <div *ngIf="editFormData.email.invalid && (editFormData.email.dirty || editFormData.email.touched)"
+                    class="alert-danger">
+                    <span *ngIf="editFormData.email.errors.required">Email is required!</span>
+                    <span *ngIf="editFormData.email.errors.email">Email must be a valid address!</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row d-flex justify-content-center align-items-center">
+            <label for="mobileNumber" class="col-form-label col-sm-2 text-right">Mobile number:</label>
+            <div class="col-sm-5">
+                <input type="text" formControlName="mobileNumber" class="form-control" />
+                <div *ngIf="editFormData.mobileNumber.invalid && (editFormData.mobileNumber.dirty || editFormData.mobileNumber.touched)"
+                    class="alert-danger">
+                    <span>Mobile number is required!</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button [disabled]="isLoading" class="btn btn-primary mr-2" (click)="modal.close('Cancel')">Cancel</button>
+            <button [disabled]="isLoading" class="btn btn-primary mr-2">Update</button>
+        </div>
+
     </form>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
-  </div>
+</div>
+<!-- <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark"  (click)="modal.close('Yes')">Update</button>
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Cancel')">Cancel</button>
+</div> -->

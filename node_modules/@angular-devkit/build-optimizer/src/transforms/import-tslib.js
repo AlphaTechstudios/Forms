@@ -10,13 +10,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ts = require("typescript");
 const ast_utils_1 = require("../helpers/ast-utils");
 /**
- * @deprecated From 0.9.0
+ * @deprecated From 0.900.0
  */
-function testImportTslib(content) {
-    const regex = /var (__extends|__decorate|__metadata|__param)(\$\d+)? = \(.*\r?\n\s+(.*\r?\n)*\s*\};/;
-    return regex.test(content);
-}
-exports.testImportTslib = testImportTslib;
 function getImportTslibTransformer() {
     return (context) => {
         const transformer = (sf) => {

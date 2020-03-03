@@ -6,10 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /// <amd-module name="@angular/language-service/src/locate_symbol" />
-import { TemplateInfo } from './common';
-import { Span, Symbol } from './types';
+import { StaticSymbol } from '@angular/compiler';
+import * as tss from 'typescript/lib/tsserverlibrary';
+import { AstResult } from './common';
+import { Symbol } from './types';
 export interface SymbolInfo {
     symbol: Symbol;
-    span: Span;
+    span: tss.TextSpan;
+    staticSymbol?: StaticSymbol;
 }
-export declare function locateSymbol(info: TemplateInfo): SymbolInfo | undefined;
+/**
+ * Traverses a template AST and locates symbol(s) at a specified position.
+ * @param info template AST information set
+ * @param position location to locate symbols at
+ */
+export declare function locateSymbols(info: AstResult, position: number): SymbolInfo[];

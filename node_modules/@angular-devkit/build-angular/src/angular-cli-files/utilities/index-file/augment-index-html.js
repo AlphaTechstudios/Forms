@@ -16,6 +16,7 @@ const parse5 = require('parse5');
  * after processing several configurations in order to build different sets of
  * bundles for differential serving.
  */
+// tslint:disable-next-line: no-big-function
 async function augmentIndexHtml(params) {
     const { loadOutputFile, files, noModuleFiles = [], moduleFiles = [], entrypoints } = params;
     let { crossOrigin = 'none' } = params;
@@ -46,8 +47,10 @@ async function augmentIndexHtml(params) {
     const document = parse5.parse(params.inputContent, { treeAdapter, locationInfo: true });
     let headElement;
     let bodyElement;
+    let htmlElement;
     for (const docChild of document.childNodes) {
         if (docChild.tagName === 'html') {
+            htmlElement = docChild;
             for (const htmlChild of docChild.childNodes) {
                 if (htmlChild.tagName === 'head') {
                     headElement = htmlChild;
@@ -94,16 +97,13 @@ async function augmentIndexHtml(params) {
         // such as runtime.js
         const scriptPredictor = ({ file }) => file === script;
         if (!files.some(scriptPredictor)) {
-            // in some cases for differential loading file with the same name is avialable in both
+            // in some cases for differential loading file with the same name is available in both
             // nomodule and module such as scripts.js
             // we shall not add these attributes if that's the case
             const isNoModuleType = noModuleFiles.some(scriptPredictor);
             const isModuleType = moduleFiles.some(scriptPredictor);
             if (isNoModuleType && !isModuleType) {
-                attrs.push({ name: 'nomodule', value: null });
-                if (!script.startsWith('polyfills-nomodule-es5')) {
-                    attrs.push({ name: 'defer', value: null });
-                }
+                attrs.push({ name: 'nomodule', value: null }, { name: 'defer', value: null });
             }
             else if (isModuleType && !isNoModuleType) {
                 attrs.push({ name: 'type', value: 'module' });
@@ -175,6 +175,26 @@ async function augmentIndexHtml(params) {
         treeAdapter.appendChild(styleElements, element);
     }
     indexSource.insert(styleInsertionPoint, parse5.serialize(styleElements, { treeAdapter }));
+    // Adjust document locale if specified
+    if (typeof params.lang == 'string') {
+        const htmlFragment = treeAdapter.createDocumentFragment();
+        let langAttribute;
+        for (const attribute of htmlElement.attrs) {
+            if (attribute.name === 'lang') {
+                langAttribute = attribute;
+            }
+        }
+        if (langAttribute) {
+            langAttribute.value = params.lang;
+        }
+        else {
+            htmlElement.attrs.push({ name: 'lang', value: params.lang });
+        }
+        // we want only openning tag
+        htmlElement.childNodes = [];
+        treeAdapter.appendChild(htmlFragment, htmlElement);
+        indexSource.replace(htmlElement.__location.startTag.startOffset, htmlElement.__location.startTag.endOffset - 1, parse5.serialize(htmlFragment, { treeAdapter }).replace('</html>', ''));
+    }
     return indexSource.source();
 }
 exports.augmentIndexHtml = augmentIndexHtml;

@@ -18,8 +18,10 @@ export declare class NodeWorkflow extends workflow.BaseWorkflow {
         dryRun?: boolean;
         root?: Path;
         packageManager?: string;
+        packageRegistry?: string;
         registry?: schema.CoreSchemaRegistry;
+        resolvePaths?: string[];
     });
-    readonly engine: FileSystemEngine;
-    readonly engineHost: NodeModulesEngineHost;
+    get engine(): FileSystemEngine;
+    get engineHost(): NodeModulesEngineHost;
 }

@@ -98,14 +98,15 @@ function addAppToWorkspaceFile(options, appDir) {
         projectRoot += '/';
     }
     const schematics = {};
-    if (options.inlineTemplate === true
-        || options.inlineStyle === true
+    if (options.inlineTemplate
+        || options.inlineStyle
+        || options.minimal
         || options.style !== schema_1.Style.Css) {
         const componentSchematicsOptions = {};
-        if (options.inlineTemplate === true) {
+        if (options.inlineTemplate || options.minimal) {
             componentSchematicsOptions.inlineTemplate = true;
         }
-        if (options.inlineStyle === true) {
+        if (options.inlineStyle || options.minimal) {
             componentSchematicsOptions.inlineStyle = true;
         }
         if (options.style && options.style !== schema_1.Style.Css) {
@@ -113,8 +114,8 @@ function addAppToWorkspaceFile(options, appDir) {
         }
         schematics['@schematics/angular:component'] = componentSchematicsOptions;
     }
-    if (options.skipTests === true) {
-        ['class', 'component', 'directive', 'guard', 'module', 'pipe', 'service'].forEach((type) => {
+    if (options.skipTests || options.minimal) {
+        ['class', 'component', 'directive', 'guard', 'interceptor', 'module', 'pipe', 'service'].forEach((type) => {
             if (!(`@schematics/angular:${type}` in schematics)) {
                 schematics[`@schematics/angular:${type}`] = {};
             }
@@ -137,7 +138,7 @@ function addAppToWorkspaceFile(options, appDir) {
                     main: `${sourceRoot}/main.ts`,
                     polyfills: `${sourceRoot}/polyfills.ts`,
                     tsConfig: `${projectRoot}tsconfig.app.json`,
-                    aot: !!options.enableIvy,
+                    aot: true,
                     assets: [
                         `${sourceRoot}/favicon.ico`,
                         `${sourceRoot}/assets`,
@@ -158,7 +159,6 @@ function addAppToWorkspaceFile(options, appDir) {
                         sourceMap: false,
                         extractCss: true,
                         namedChunks: false,
-                        aot: true,
                         extractLicenses: true,
                         vendorChunk: false,
                         buildOptimizer: true,

@@ -428,9 +428,9 @@ async function promptProjectAnalytics(force = false) {
     return false;
 }
 exports.promptProjectAnalytics = promptProjectAnalytics;
-function hasGlobalAnalyticsConfiguration() {
+async function hasGlobalAnalyticsConfiguration() {
     try {
-        const globalWorkspace = config_1.getWorkspace('global');
+        const globalWorkspace = await config_1.getWorkspace('global');
         const analyticsConfig = globalWorkspace && globalWorkspace.getCli() && globalWorkspace.getCli()['analytics'];
         if (analyticsConfig !== null && analyticsConfig !== undefined) {
             return true;
@@ -446,7 +446,7 @@ exports.hasGlobalAnalyticsConfiguration = hasGlobalAnalyticsConfiguration;
  *
  * If any problem happens, it is considered the user has been opting out of analytics.
  */
-function getGlobalAnalytics() {
+async function getGlobalAnalytics() {
     analyticsDebug('getGlobalAnalytics');
     const propertyId = exports.AnalyticsProperties.AngularCliDefault;
     if ('NG_CLI_ANALYTICS' in process.env) {
@@ -461,7 +461,7 @@ function getGlobalAnalytics() {
     }
     // If anything happens we just keep the NOOP analytics.
     try {
-        const globalWorkspace = config_1.getWorkspace('global');
+        const globalWorkspace = await config_1.getWorkspace('global');
         const analyticsConfig = globalWorkspace && globalWorkspace.getCli() && globalWorkspace.getCli()['analytics'];
         analyticsDebug('Client Analytics config found: %j', analyticsConfig);
         if (analyticsConfig === false) {
@@ -496,11 +496,68 @@ function getGlobalAnalytics() {
     }
 }
 exports.getGlobalAnalytics = getGlobalAnalytics;
+async function hasWorkspaceAnalyticsConfiguration() {
+    try {
+        const globalWorkspace = await config_1.getWorkspace('local');
+        const analyticsConfig = globalWorkspace
+            && globalWorkspace.getCli()
+            && globalWorkspace.getCli()['analytics'];
+        if (analyticsConfig !== undefined) {
+            return true;
+        }
+    }
+    catch (_a) { }
+    return false;
+}
+exports.hasWorkspaceAnalyticsConfiguration = hasWorkspaceAnalyticsConfiguration;
+/**
+ * Get the workspace analytics object for the user. This returns an instance of UniversalAnalytics,
+ * or undefined if analytics are disabled.
+ *
+ * If any problem happens, it is considered the user has been opting out of analytics.
+ */
+async function getWorkspaceAnalytics() {
+    analyticsDebug('getWorkspaceAnalytics');
+    try {
+        const globalWorkspace = await config_1.getWorkspace('local');
+        const analyticsConfig = globalWorkspace
+            && globalWorkspace.getCli()
+            && globalWorkspace.getCli()['analytics'];
+        analyticsDebug('Workspace Analytics config found: %j', analyticsConfig);
+        if (analyticsConfig === false) {
+            analyticsDebug('Analytics disabled. Ignoring all analytics.');
+            return undefined;
+        }
+        else if (analyticsConfig === undefined || analyticsConfig === null) {
+            analyticsDebug('Analytics settings not found. Ignoring all analytics.');
+            return undefined;
+        }
+        else {
+            let uid = undefined;
+            if (typeof analyticsConfig == 'string') {
+                uid = analyticsConfig;
+            }
+            else if (typeof analyticsConfig == 'object' && typeof analyticsConfig['uid'] == 'string') {
+                uid = analyticsConfig['uid'];
+            }
+            analyticsDebug('client id: %j', uid);
+            if (uid == undefined) {
+                return undefined;
+            }
+            return new UniversalAnalytics(exports.AnalyticsProperties.AngularCliDefault, uid);
+        }
+    }
+    catch (err) {
+        analyticsDebug('Error happened during reading of analytics config: %s', err.message);
+        return undefined;
+    }
+}
+exports.getWorkspaceAnalytics = getWorkspaceAnalytics;
 /**
  * Return the usage analytics sharing setting, which is either a property string (GA-XXXXXXX-XX),
  * or undefined if no sharing.
  */
-function getSharedAnalytics() {
+async function getSharedAnalytics() {
     analyticsDebug('getSharedAnalytics');
     const envVarName = 'NG_CLI_ANALYTICS_SHARE';
     if (envVarName in process.env) {
@@ -511,7 +568,7 @@ function getSharedAnalytics() {
     }
     // If anything happens we just keep the NOOP analytics.
     try {
-        const globalWorkspace = config_1.getWorkspace('global');
+        const globalWorkspace = await config_1.getWorkspace('global');
         const analyticsConfig = globalWorkspace && globalWorkspace.getCli() && globalWorkspace.getCli()['analyticsSharing'];
         if (!analyticsConfig || !analyticsConfig.tracking || !analyticsConfig.uuid) {
             return undefined;

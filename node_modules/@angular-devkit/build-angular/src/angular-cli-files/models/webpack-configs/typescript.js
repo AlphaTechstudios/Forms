@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const build_optimizer_1 = require("@angular-devkit/build-optimizer");
 const path = require("path");
 const webpack_1 = require("@ngtools/webpack");
-const utils_1 = require("../../../utils");
 function _pluginOptionsOverrides(buildOptions, pluginOptions) {
     const compilerOptions = {
         ...(pluginOptions.compilerOptions || {})
@@ -22,9 +21,6 @@ function _pluginOptionsOverrides(buildOptions, pluginOptions) {
         for (const replacement of buildOptions.fileReplacements) {
             hostReplacementPaths[replacement.replace] = replacement.with;
         }
-    }
-    if (utils_1.fullDifferential && buildOptions.scriptTargetOverride) {
-        compilerOptions.target = buildOptions.scriptTargetOverride;
     }
     if (buildOptions.preserveSymlinks) {
         compilerOptions.preserveSymlinks = true;
@@ -48,6 +44,11 @@ function _createAotPlugin(wco, options, i18nExtract = false) {
         i18nInFile: i18nInFile,
         i18nInFormat: buildOptions.i18nFormat,
     };
+    const compilerOptions = options.compilerOptions || {};
+    if (i18nExtract) {
+        // Extraction of i18n is still using the legacy VE pipeline
+        compilerOptions.enableIvy = false;
+    }
     const additionalLazyModules = {};
     if (buildOptions.lazyModules) {
         for (const lazyModule of buildOptions.lazyModules) {
@@ -68,6 +69,7 @@ function _createAotPlugin(wco, options, i18nExtract = false) {
         logger: wco.logger,
         directTemplateLoading: true,
         ...options,
+        compilerOptions,
     };
     pluginOptions = _pluginOptionsOverrides(buildOptions, pluginOptions);
     return new webpack_1.AngularCompilerPlugin(pluginOptions);
@@ -90,9 +92,12 @@ function getAotConfig(wco, i18nExtract = false) {
         });
     }
     const test = /(?:\.ngfactory\.js|\.ngstyle\.js|\.tsx?)$/;
+    const optimize = wco.buildOptions.optimization.scripts;
     return {
         module: { rules: [{ test, use: loaders }] },
-        plugins: [_createAotPlugin(wco, { tsConfigPath }, i18nExtract)]
+        plugins: [
+            _createAotPlugin(wco, { tsConfigPath, emitClassMetadata: !optimize, emitNgModuleScope: !optimize }, i18nExtract),
+        ],
     };
 }
 exports.getAotConfig = getAotConfig;

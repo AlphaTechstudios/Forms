@@ -5,13 +5,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavBarComponent } from './menus/nav-bar/nav-bar.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { SignInComponent } from './sign-in/sign-in.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { HomeComponent } from './home/home.component';
 import { JwtInterceptor } from './Tools/jwt-interceptor';
 import { ManageUsersComponent } from './manage-users/manage-users.component';
-import { EditUserComponent } from './edit-user/edit-user.component';
+// import { EditUserComponent } from './edit-user/edit-user.component';
+import { EditUserComponent } from './PopUp/edit-user/edit-user.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
@@ -24,11 +25,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ManageUsersComponent,
     EditUserComponent
   ],
-  
+  entryComponents: [EditUserComponent],
   imports: [
     BrowserModule,
     AppRoutingModule, 
     ReactiveFormsModule,
+    FormsModule,
     HttpClientModule,
     NgbModule
     ],

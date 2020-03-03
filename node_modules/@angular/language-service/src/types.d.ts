@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /// <amd-module name="@angular/language-service/src/types" />
-import { CompileDirectiveMetadata, CompileMetadataResolver, CompilePipeSummary, NgAnalyzedModules, StaticSymbol } from '@angular/compiler';
-import { BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable } from '@angular/compiler-cli/src/language_services';
-import { AstResult, TemplateInfo } from './common';
-export { BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable };
+import { CompileDirectiveMetadata, NgAnalyzedModules, StaticSymbol } from '@angular/compiler';
+import * as ts from 'typescript';
+import { AstResult } from './common';
+import { BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable } from './symbols';
+export { BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, StaticSymbol, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable };
 /**
  * The information `LanguageService` needs from the `LanguageServiceHost` to describe the content of
  * a template and the language context the template is in.
@@ -23,15 +24,6 @@ export interface TemplateSource {
      * The source of the template.
      */
     readonly source: string;
-    /**
-     * The version of the source. As files are modified the version should change. That is, if the
-     * `LanguageService` requesting template information for a source file and that file has changed
-     * since the last time the host was asked for the file then this version string should be
-     * different. No assumptions are made about the format of this string.
-     *
-     * The version can change more often than the source but should not change less often.
-     */
-    readonly version: string;
     /**
      * The span of the template within the source file.
      */
@@ -48,6 +40,10 @@ export interface TemplateSource {
      * A `SymbolQuery` for the context of the template.
      */
     readonly query: SymbolQuery;
+    /**
+     * Name of the file that contains the template. Could be `.html` or `.ts`.
+     */
+    readonly fileName: string;
 }
 /**
  * A sequence of template sources.
@@ -101,7 +97,7 @@ export interface Declaration {
     /**
      * Reference to the compiler directive metadata for the declaration.
      */
-    readonly metadata?: CompileDirectiveMetadata;
+    readonly metadata: CompileDirectiveMetadata;
     /**
      * Error reported trying to get the metadata.
      */
@@ -144,20 +140,10 @@ export declare type Declarations = Declaration[];
  */
 export interface LanguageServiceHost {
     /**
-     * The resolver to use to find compiler metadata.
-     */
-    readonly resolver: CompileMetadataResolver;
-    /**
-     * Returns the template information for templates in `fileName` at the given location. If
-     * `fileName` refers to a template file then the `position` should be ignored. If the `position`
-     * is not in a template literal string then this method should return `undefined`.
-     */
-    getTemplateAt(fileName: string, position: number): TemplateSource | undefined;
-    /**
      * Return the template source information for all templates in `fileName` or for `fileName` if
      * it is a template file.
      */
-    getTemplates(fileName: string): TemplateSources;
+    getTemplates(fileName: string): TemplateSource[];
     /**
      * Returns the Angular declarations in the given file.
      */
@@ -167,17 +153,13 @@ export interface LanguageServiceHost {
      */
     getAnalyzedModules(): NgAnalyzedModules;
     /**
-     * Return a list all the template files referenced by the project.
-     */
-    getTemplateReferences(): string[];
-    /**
      * Return the AST for both HTML and template for the contextFile.
      */
-    getTemplateAst(template: TemplateSource, contextFile: string): AstResult;
+    getTemplateAst(template: TemplateSource): AstResult | undefined;
     /**
      * Return the template AST for the node that corresponds to the position.
      */
-    getTemplateAstAtPosition(fileName: string, position: number): TemplateInfo | undefined;
+    getTemplateAstAtPosition(fileName: string, position: number): AstResult | undefined;
 }
 /**
  * An item of the completion result to be displayed by an editor.
@@ -203,9 +185,9 @@ export interface Completion {
 /**
  * A sequence of completions.
  *
- * @publicApi
+ * @deprecated
  */
-export declare type Completions = Completion[] | undefined;
+export declare type Completions = Completion[];
 /**
  * A file and span.
  */
@@ -214,14 +196,35 @@ export interface Location {
     span: Span;
 }
 /**
- * The kind of diagnostic message.
- *
- * @publicApi
+ * The type of Angular directive. Used for QuickInfo in template.
  */
-export declare enum DiagnosticKind {
-    Error = 0,
-    Warning = 1
+export declare enum DirectiveKind {
+    COMPONENT = "component",
+    DIRECTIVE = "directive",
+    EVENT = "event"
 }
+/**
+ * ScriptElementKind for completion.
+ */
+export declare enum CompletionKind {
+    ANGULAR_ELEMENT = "angular element",
+    ATTRIBUTE = "attribute",
+    COMPONENT = "component",
+    ELEMENT = "element",
+    ENTITY = "entity",
+    HTML_ATTRIBUTE = "html attribute",
+    HTML_ELEMENT = "html element",
+    KEY = "key",
+    METHOD = "method",
+    PIPE = "pipe",
+    PROPERTY = "property",
+    REFERENCE = "reference",
+    TYPE = "type",
+    VARIABLE = "variable"
+}
+export declare type CompletionEntry = Omit<ts.CompletionEntry, 'kind'> & {
+    kind: CompletionKind;
+};
 /**
  * A template diagnostics message chain. This is similar to the TypeScript
  * DiagnosticMessageChain. The messages are intended to be formatted as separate
@@ -240,7 +243,7 @@ export interface DiagnosticMessageChain {
     /**
      * The next message in the chain.
      */
-    next?: DiagnosticMessageChain;
+    next?: DiagnosticMessageChain[];
 }
 /**
  * An template diagnostic message to display.
@@ -251,7 +254,7 @@ export interface Diagnostic {
     /**
      * The kind of diagnostic message
      */
-    kind: DiagnosticKind;
+    kind: ts.DiagnosticCategory;
     /**
      * The source span that should be highlighted.
      */
@@ -264,7 +267,7 @@ export interface Diagnostic {
 /**
  * A sequence of diagnostic message.
  *
- * @publicApi
+ * @deprecated
  */
 export declare type Diagnostics = Diagnostic[];
 /**
@@ -298,53 +301,10 @@ export interface Hover {
 /**
  * An instance of an Angular language service created by `createLanguageService()`.
  *
- * The language service returns information about Angular templates that are included in a project
- * as defined by the `LanguageServiceHost`.
- *
- * When a method expects a `fileName` this file can either be source file in the project that
- * contains a template in a string literal or a template file referenced by the project returned
- * by `getTemplateReference()`. All other files will cause the method to return `undefined`.
- *
- * If a method takes a `position`, it is the offset of the UTF-16 code-point relative to the
- * beginning of the file reference by `fileName`.
- *
- * This interface and all interfaces and types marked as `LanguageService` types, describe  a
- * particular implementation of the Angular language service and is not intended to be
- * implemented. Adding members to the interface will not be considered a breaking change as
- * defined by SemVer.
- *
- * Removing a member or making a member optional, changing a method parameters, or changing a
- * member's type will all be considered a breaking change.
- *
- * While an interface is marked as experimental breaking-changes will be allowed between minor
- * releases. After an interface is marked as stable breaking-changes will only be allowed between
- * major releases. No breaking changes are allowed between patch releases.
+ * The Angular language service implements a subset of methods defined in
+ * The Angular language service implements a subset of methods defined by
+ * the TypeScript language service.
  *
  * @publicApi
  */
-export interface LanguageService {
-    /**
-     * Returns a list of all the external templates referenced by the project.
-     */
-    getTemplateReferences(): string[] | undefined;
-    /**
-     * Returns a list of all error for all templates in the given file.
-     */
-    getDiagnostics(fileName: string): Diagnostics | undefined;
-    /**
-     * Return the completions at the given position.
-     */
-    getCompletionsAt(fileName: string, position: number): Completions | undefined;
-    /**
-     * Return the definition location for the symbol at position.
-     */
-    getDefinitionAt(fileName: string, position: number): Definition | undefined;
-    /**
-     * Return the hover information for the symbol at position.
-     */
-    getHoverAt(fileName: string, position: number): Hover | undefined;
-    /**
-     * Return the pipes that are available at the given position.
-     */
-    getPipesAt(fileName: string, position: number): CompilePipeSummary[];
-}
+export declare type LanguageService = Pick<ts.LanguageService, 'getCompletionsAtPosition' | 'getDefinitionAndBoundSpan' | 'getQuickInfoAtPosition' | 'getSemanticDiagnostics'>;
